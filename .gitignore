@@ -5,3 +5,4 @@
 *.doc
 source/
 convert/
+.code-workspace
