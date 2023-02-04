@@ -1,0 +1,3 @@
+#!/bin/bash
+docker ps
+docker exec -it 703ca272f000 bash
