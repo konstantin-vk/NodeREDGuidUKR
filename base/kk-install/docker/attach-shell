@@ -1,3 +1,5 @@
 #!/bin/bash
-docker ps
-docker exec -it 703ca272f000 bash
+#docker ps
+#docker exec -it 703ca272f000 bash
+
+docker exec -it $(docker container ls --all -f name=mynodered --quiet) bash
