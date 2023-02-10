@@ -1,0 +1,4 @@
+#!/bin/bash
+#docker container ls --all -f name=mynodered
+
+docker container start $(docker container ls --all -f name=mynodered2 --quiet)
