@@ -16,27 +16,7 @@ test :
 #with mounted volume 
 #docker run -it --name mosquitto -p 1883:1883 -v $(pwd)/mosquitto:/mosquitto/
 
-========================================================================
-BIND MOUNT 
-FROM PI HOME DIR 
-mkdir docker  
 
-mkdir docker/mosquitto 
-mkdir docker/mosquitto/config/ 
-mkdir docker/mosquitto/data/
-mkdir docker/mosquitto/log/
-touch docker/mosquitto/config/mosquitto.conf
-nano docker/mosquitto/config/mosquitto.conf
-
-# following two lines required for > v2.0
-allow_anonymous true
-listener 1883
-persistence true
-persistence_location /mosquitto/data/
-log_dest file /mosquitto/log/mosquitto.log
-
-FROM PI HOME DIR 
-docker run -it --name mosquitto -p 1883:1883 -v $(pwd)/docker/mosquitto:/mosquitto/ eclipse-mosquitto 
 ========================================================================
 !!!!!!!!!!!!!!!!!!!!!
 VOLUME MOUNT 
@@ -85,7 +65,27 @@ mosquitto_pub -h localhost -p 1883 -t my-mqtt-topic -m "sample-msg-1"
 tcp        0      0 0.0.0.0:1883            0.0.0.0:*               LISTEN      -
 tcp        0      0 :::1883                 :::*                    LISTEN      -
 /
+========================================================================
+BIND MOUNT 
+FROM PI HOME DIR 
+mkdir docker  
 
+mkdir docker/mosquitto 
+mkdir docker/mosquitto/config/ 
+mkdir docker/mosquitto/data/
+mkdir docker/mosquitto/log/
+touch docker/mosquitto/config/mosquitto.conf
+nano docker/mosquitto/config/mosquitto.conf
+
+# following two lines required for > v2.0
+allow_anonymous true
+listener 1883
+persistence true
+persistence_location /mosquitto/data/
+log_dest file /mosquitto/log/mosquitto.log
+
+FROM PI HOME DIR 
+docker run -it --name mosquitto -p 1883:1883 -v $(pwd)/docker/mosquitto:/mosquitto/ eclipse-mosquitto 
 
 ==========================================
 ONE MORE IDEA is
