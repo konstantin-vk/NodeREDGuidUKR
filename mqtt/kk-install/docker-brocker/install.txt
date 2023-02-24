@@ -38,7 +38,9 @@ log_dest file /mosquitto/log/mosquitto.log
 FROM PI HOME DIR 
 docker run -it --name mosquitto -p 1883:1883 -v $(pwd)/docker/mosquitto:/mosquitto/ eclipse-mosquitto 
 ========================================================================
-
+!!!!!!!!!!!!!!!!!!!!!
+VOLUME MOUNT 
+!!!!!!!!!!!!!!!!!!!!!!
 
 #create a volume
 sudo docker volume create mosquitto
@@ -50,12 +52,12 @@ sudo docker volume inspect  mosquitto
 ### ???  = /var/lib/docker/volumes/mosquitto/_data/
 ###      = /var/lib/docker/volumes/mosquitto/_data
 
-sudo mkdir /var/lib/docker/volumes/mosquitto/_data/mosquitto/
-sudo mkdir /var/lib/docker/volumes/mosquitto/_data/mosquitto/config/
-sudo mkdir /var/lib/docker/volumes/mosquitto/_data/mosquitto/data/
-sudo mkdir /var/lib/docker/volumes/mosquitto/_data/mosquitto/log/
 
-sudo ls /var/lib/docker/volumes/mosquitto/_data/mosquitto/
+sudo mkdir /var/lib/docker/volumes/mosquitto/_data/config/
+sudo mkdir /var/lib/docker/volumes/mosquitto/_data/data/
+sudo mkdir /var/lib/docker/volumes/mosquitto/_data/log/
+
+sudo ls /var/lib/docker/volumes/mosquitto/_data/
 
 {
     echo '# following two lines required for > v2.0'
@@ -66,6 +68,25 @@ sudo ls /var/lib/docker/volumes/mosquitto/_data/mosquitto/
     echo 'log_dest file /mosquitto/log/mosquitto.log'
 } >> mosquitto.conf
 
-sudo mv mosquitto.conf  /var/lib/docker/volumes/mosquitto/_data/mosquitto/config/
+sudo mv mosquitto.conf  /var/lib/docker/volumes/mosquitto/_data/config/
 
 docker run -it --name mosquitto -p 1883:1883 -v mosquitto:/mosquitto/ eclipse-mosquitto 
+
+
+-- attach 
+sudo docker exec -it $(sudo docker container ls --all -f name=mosquitto --quiet) sh
+
+mosquitto_sub -h 192.168.1.15 -p 1883 -t my-mqtt-topic
+mosquitto_pub -h localhost -p 1883 -t my-mqtt-topic -m "sample-msg-1"
+
+
+
+/ # netstat -tulpn | grep LISTEN
+tcp        0      0 0.0.0.0:1883            0.0.0.0:*               LISTEN      -
+tcp        0      0 :::1883                 :::*                    LISTEN      -
+/
+
+
+==========================================
+ONE MORE IDEA is
+-v `pwd`/mosquitto.conf:/mosquitto/config/mosquitto.conf
