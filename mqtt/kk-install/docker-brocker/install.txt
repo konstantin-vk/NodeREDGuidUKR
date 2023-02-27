@@ -1,0 +1,92 @@
+#eclipse mosquitto service brocker 
+#https://hub.docker.com/_/eclipse-mosquitto
+#https://github.com/eclipse/mosquitto
+#
+# config is on /mosquitto/config/mosquitto.conf
+
+docker pull eclipse-mosquitto
+
+docker run -it --name mosquitto -p 1883:1883 eclipse-mosquitto 
+
+test : 
+./mqttsub
+./mqttpub 
+
+============================
+#with mounted volume 
+#docker run -it --name mosquitto -p 1883:1883 -v $(pwd)/mosquitto:/mosquitto/
+
+
+========================================================================
+!!!!!!!!!!!!!!!!!!!!!
+VOLUME MOUNT 
+!!!!!!!!!!!!!!!!!!!!!!
+
+#create a volume
+sudo docker volume create mosquitto
+# List volumes
+sudo docker volume ls
+# Inspect volumes
+sudo docker volume inspect  mosquitto
+
+### ???  = /var/lib/docker/volumes/mosquitto/_data/
+###      = /var/lib/docker/volumes/mosquitto/_data
+
+
+sudo mkdir /var/lib/docker/volumes/mosquitto/_data/config/
+sudo mkdir /var/lib/docker/volumes/mosquitto/_data/data/
+sudo mkdir /var/lib/docker/volumes/mosquitto/_data/log/
+
+sudo ls /var/lib/docker/volumes/mosquitto/_data/
+
+{
+    echo '# following two lines required for > v2.0'
+    echo 'allow_anonymous true'
+    echo 'listener 1883'
+    echo 'persistence true'
+    echo 'persistence_location /mosquitto/data/'
+    echo 'log_dest file /mosquitto/log/mosquitto.log'
+} >> mosquitto.conf
+
+sudo mv mosquitto.conf  /var/lib/docker/volumes/mosquitto/_data/config/
+
+docker run -it --name mosquitto -p 1883:1883 -v mosquitto:/mosquitto/ eclipse-mosquitto 
+
+
+-- attach 
+sudo docker exec -it $(sudo docker container ls --all -f name=mosquitto --quiet) sh
+
+mosquitto_sub -h 192.168.1.15 -p 1883 -t my-mqtt-topic
+mosquitto_pub -h localhost -p 1883 -t my-mqtt-topic -m "sample-msg-1"
+
+
+
+/ # netstat -tulpn | grep LISTEN
+tcp        0      0 0.0.0.0:1883            0.0.0.0:*               LISTEN      -
+tcp        0      0 :::1883                 :::*                    LISTEN      -
+/
+========================================================================
+BIND MOUNT 
+FROM PI HOME DIR 
+mkdir docker  
+
+mkdir docker/mosquitto 
+mkdir docker/mosquitto/config/ 
+mkdir docker/mosquitto/data/
+mkdir docker/mosquitto/log/
+touch docker/mosquitto/config/mosquitto.conf
+nano docker/mosquitto/config/mosquitto.conf
+
+# following two lines required for > v2.0
+allow_anonymous true
+listener 1883
+persistence true
+persistence_location /mosquitto/data/
+log_dest file /mosquitto/log/mosquitto.log
+
+FROM PI HOME DIR 
+docker run -it --name mosquitto -p 1883:1883 -v $(pwd)/docker/mosquitto:/mosquitto/ eclipse-mosquitto 
+
+==========================================
+ONE MORE IDEA is
+-v `pwd`/mosquitto.conf:/mosquitto/config/mosquitto.conf

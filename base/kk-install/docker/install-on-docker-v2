@@ -8,4 +8,4 @@
 #    -v node_red_data:/data  - mount a docker named volume called `node_red_data` to the container /data directory so any changes made to flows are persisted
 #    --name mynodered        - give this machine a friendly local name
 #    nodered/node-red        - the image to base it on - currently Node-RED v1.2.0
-docker run -it -p 1880:1880 -v node_red_data:/data --name mynodered nodered/node-red
+docker run -it -p 1880:1880 -v node_red_data2:/data2 --name mynodered2 nodered/node-red
