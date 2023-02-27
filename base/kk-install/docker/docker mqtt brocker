@@ -1,0 +1,51 @@
+https://blog.feabhas.com/2020/02/running-the-eclipse-mosquitto-mqtt-broker-in-a-docker-container/
+
+
+docker pull eclipse-mosquitto
+
+docker run -it --name mosquitto -p 1883:1883 eclipse-mosquitto 
+
+
+
+docker stop mosquitto
+
+
+sudo docker exec -it $(sudo docker container ls --all -f name=mosquitto --quiet) "sh"
+
+
+pwd = /home/pi
+cd
+mkdir docker-mosquitto
+cd docker-mosquitto
+mkdir mosquitto 
+mkdir mosquitto/config/ 
+mkdir mosquitto/data/
+mkdir mosquitto/log/
+
+touch mosquitto/config/mosquitto.conf
+
+
+
+
+
+
+
+nano mosquitto/config/mosquitto.conf
+######################################
+# following two lines required for > v2.0
+allow_anonymous true
+listener 1883
+persistence true
+persistence_location /mosquitto/data/
+log_dest file /mosquitto/log/mosquitto.log
+###########################################
+
+
+
+remove???? container mosquitto
+
+docker run -it --name mosquitto -p 1883:1883 -v $(pwd)/mosquitto:/mosquitto/ eclipse-mosquitto 
+
+
+
+./mqttpub
